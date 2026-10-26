@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAIERS - AWS Microservices Architecture Diagram</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background-color: #0b1120;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .header-panel {
+      max-width: 1600px;
+      width: 100%;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+    }
+    .title-group h1 {
+      margin: 0 0 6px 0;
+      font-size: 24px;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .aws-badge {
+      background: #232f3e;
+      color: #ff9900;
+      border: 1.5px solid #ff9900;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #1d4ed8;
+    }
+    .diagram-container {
+      max-width: 1600px;
+      width: 100%;
+      background: #f4f6f8;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
+      border: 1px solid #334155;
+    }
+    img.diagram-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .legend-panel {
+      max-width: 1600px;
+      width: 100%;
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .legend-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .legend-card h3 {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend-card p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+    .pill {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-panel">
+    <div class="title-group">
+      <h1><span class="aws-badge">AWS</span> FAIERS Backend Architecture Diagram</h1>
+      <p class="subtitle">Fully Autonomous Intelligent Emergency Response System — Cloud Microservices &amp; Green Corridor</p>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="window.print()">Print / Export PDF</button>
+      <a href="faiers-aws-architecture.svg" download="faiers-aws-architecture.svg" class="btn" style="text-decoration:none;">Download SVG</a>
+    </div>
+  </div>
+
+  <div class="diagram-container">
+    <img src="faiers-aws-architecture.svg" alt="FAIERS AWS Architecture Diagram" class="diagram-svg" />
+  </div>
+
+  <div class="legend-panel">
+    <div class="legend-card">
+      <h3><span class="pill" style="background:#FF9900;">1</span> Voice Ingestion Flow</h3>
+      <p>Emergency caller connects through Exotel. ElevenLabs voice agent collects patient details and initiates an authenticated HTTP POST webhook through AWS ALB to the Emergency Request Service.</p>
+    </div>
+    <div class="legend-card">
+      <h3><span class="pill" style="background:#E7157B;">3</span> Asynchronous Dispatch</h3>
+      <p>Emergency Request Service validates, stores the request in RDS PostgreSQL, and sends an <code>EmergencyRequestAcceptedEvent</code> to Amazon SQS. Dispatch Service safely consumes jobs without duplicate allocations.</p>
+    </div>
+    <div class="legend-card">
+      <h3><span class="pill" style="background:#0073BB;">5</span> OBU Command &amp; ACK</h3>
+      <p>Dispatch Service selects nearest ambulance via PostGIS geospatial query. Vehicle Command Service transmits dispatch orders via NAT Gateway to the Onboard Unit and awaits explicit vehicle ACK.</p>
+    </div>
+    <div class="legend-card">
+      <h3><span class="pill" style="background:#10B981;">7</span> Live Tracking &amp; Green Corridor</h3>
+      <p>Ambulance streams live GPS coords through ALB to Vehicle Tracking Service. Real-time locations are buffered in ElastiCache Redis, ETA recalculated, and signal priority preemption requested from municipal traffic controllers.</p>
+    </div>
+  </div>
+
+</body>
+</html>

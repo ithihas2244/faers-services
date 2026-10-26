@@ -1,0 +1,486 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1080" width="100%" height="100%" style="background:#F4F6F8; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Drop Shadows -->
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f1b29" flood-opacity="0.08" />
+    </filter>
+    <filter id="badge-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.15" />
+    </filter>
+    <filter id="glow-orange" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#FF9900" flood-opacity="0.4" />
+    </filter>
+
+    <!-- Arrow Markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#4B5563" />
+    </marker>
+    <marker id="arrow-aws" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#FF9900" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10B981" />
+    </marker>
+    <marker id="arrow-pink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#E7157B" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0073BB" />
+    </marker>
+
+    <!-- Gradients -->
+    <linearGradient id="header-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+  </defs>
+
+  <!-- ================= HEADER BAR ================= -->
+  <rect x="0" y="0" width="1600" height="70" fill="url(#header-grad)" />
+  <!-- AWS Logo Badge -->
+  <g transform="translate(30, 16)">
+    <rect width="60" height="38" rx="6" fill="#232F3E" stroke="#FF9900" stroke-width="2"/>
+    <text x="30" y="24" fill="#FF9900" font-weight="900" font-size="16" text-anchor="middle">aws</text>
+  </g>
+  <text x="105" y="38" fill="#FFFFFF" font-size="20" font-weight="700" letter-spacing="0.5">FAIERS — AWS Production Microservices Architecture</text>
+  <text x="105" y="56" fill="#94A3B8" font-size="12">Fully Autonomous Intelligent Emergency Response System • Amazon ECS (Fargate), RDS PostGIS, SQS &amp; Green Corridor</text>
+
+  <!-- AWS Legend / Pill Indicators -->
+  <g transform="translate(1120, 22)">
+    <rect x="0" y="0" width="450" height="30" rx="15" fill="#334155" />
+    <circle cx="20" cy="15" r="7" fill="#ED7100" />
+    <text x="32" y="19" fill="#F8FAFC" font-size="11" font-weight="600">ECS Compute</text>
+    <circle cx="120" cy="15" r="7" fill="#E7157B" />
+    <text x="132" y="19" fill="#F8FAFC" font-size="11" font-weight="600">SQS Messaging</text>
+    <circle cx="225" cy="15" r="7" fill="#C925D1" />
+    <text x="237" y="19" fill="#F8FAFC" font-size="11" font-weight="600">RDS / Cache</text>
+    <circle cx="320" cy="15" r="7" fill="#7AA116" />
+    <text x="332" y="19" fill="#F8FAFC" font-size="11" font-weight="600">Network / ALB</text>
+    <circle cx="410" cy="15" r="7" fill="#10B981" />
+    <text x="422" y="19" fill="#F8FAFC" font-size="11" font-weight="600">IoT</text>
+  </g>
+
+  <!-- ================= LEFT: EXTERNAL ACTORS & CLIENTS ================= -->
+  <!-- Box: External Ingestion & Actuators -->
+  <rect x="30" y="90" width="220" height="960" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#card-shadow)" />
+  <rect x="30" y="90" width="220" height="36" rx="12" fill="#F1F5F9" />
+  <text x="140" y="113" fill="#334155" font-size="13" font-weight="700" text-anchor="middle">EXTERNAL CLIENTS &amp; IOT</text>
+
+  <!-- 1. Caller & Telephony -->
+  <g transform="translate(45, 140)">
+    <rect width="190" height="110" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <circle cx="35" cy="35" r="18" fill="#3B82F6" />
+    <!-- Phone icon -->
+    <path d="M28 29 C28 27, 30 25, 32 25 C33 25, 34 26, 35 28 L36 30 C37 31, 36 32, 35 33 L34 34 C35 36, 36 37, 38 38 L39 37 C40 36, 41 36, 42 37 L44 38 C45 39, 45 40, 44 41 C43 43, 41 44, 39 44 C33 43, 27 37, 28 29 Z" fill="#FFF" />
+    <text x="65" y="32" fill="#0F172A" font-size="13" font-weight="700">Emergency Call</text>
+    <text x="65" y="48" fill="#64748B" font-size="11">Exotel Telephony Gateway</text>
+    <rect x="12" y="68" width="166" height="30" rx="6" fill="#EFF6FF" stroke="#BFDBFE" />
+    <text x="95" y="88" fill="#1D4ED8" font-size="11" font-weight="600" text-anchor="middle">ElevenLabs AI Voice Agent</text>
+  </g>
+
+  <!-- 2. Emergency Vehicle / Onboard Unit -->
+  <g transform="translate(45, 390)">
+    <rect width="190" height="135" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <circle cx="35" cy="35" r="18" fill="#EF4444" />
+    <!-- Ambulance / Truck icon -->
+    <path d="M26 30 L36 30 L40 35 L44 35 L44 41 L26 41 Z M29 41 A3 3 0 0 1 29 47 A3 3 0 0 1 29 41 M41 41 A3 3 0 0 1 41 47 A3 3 0 0 1 41 41" fill="#FFF" />
+    <text x="65" y="32" fill="#0F172A" font-size="13" font-weight="700">Emergency Vehicles</text>
+    <text x="65" y="48" fill="#64748B" font-size="11">Ambulances &amp; Responders</text>
+    <rect x="12" y="66" width="166" height="26" rx="5" fill="#FEF2F2" stroke="#FECACA" />
+    <text x="95" y="83" fill="#991B1B" font-size="11" font-weight="600" text-anchor="middle">Onboard Vehicle Unit (OBU)</text>
+    <rect x="12" y="98" width="166" height="24" rx="4" fill="#F1F5F9" />
+    <text x="95" y="114" fill="#475569" font-size="10" text-anchor="middle">GPS Updates • Telemetry</text>
+  </g>
+
+  <!-- 3. Traffic Signal Controllers -->
+  <g transform="translate(45, 680)">
+    <rect width="190" height="120" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <circle cx="35" cy="35" r="18" fill="#10B981" />
+    <!-- Traffic light icon -->
+    <circle cx="35" cy="27" r="2.5" fill="#EF4444" />
+    <circle cx="35" cy="35" r="2.5" fill="#F59E0B" />
+    <circle cx="35" cy="43" r="2.5" fill="#10B981" />
+    <text x="65" y="32" fill="#0F172A" font-size="13" font-weight="700">Traffic Controllers</text>
+    <text x="65" y="48" fill="#64748B" font-size="11">Municipal Intersection Signals</text>
+    <rect x="12" y="68" width="166" height="40" rx="5" fill="#ECFDF5" stroke="#A7F3D0" />
+    <text x="95" y="86" fill="#065F46" font-size="11" font-weight="600" text-anchor="middle">Green Corridor Priority</text>
+    <text x="95" y="100" fill="#047857" font-size="10" text-anchor="middle">Authorized Preemption Actuator</text>
+  </g>
+
+  <!-- 4. CI/CD GitHub Actions -->
+  <g transform="translate(45, 875)">
+    <rect width="190" height="90" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <circle cx="35" cy="35" r="18" fill="#181717" />
+    <!-- GitHub / Code icon -->
+    <text x="35" y="40" fill="#FFF" font-size="14" font-weight="bold" text-anchor="middle">&lt;/&gt;</text>
+    <text x="65" y="32" fill="#0F172A" font-size="13" font-weight="700">GitHub Actions</text>
+    <text x="65" y="48" fill="#64748B" font-size="11">CI/CD Automation Pipeline</text>
+    <rect x="12" y="60" width="166" height="22" rx="4" fill="#F8FAFC" stroke="#E2E8F0" />
+    <text x="95" y="75" fill="#334155" font-size="10" text-anchor="middle">Maven Test • Docker Build</text>
+  </g>
+
+
+  <!-- ================= AWS CLOUD BOUNDARY ================= -->
+  <rect x="280" y="90" width="1290" height="960" rx="14" fill="#FFFFFF" stroke="#232F3E" stroke-width="2" filter="url(#card-shadow)" />
+  
+  <!-- AWS Cloud Label Bar -->
+  <g transform="translate(295, 102)">
+    <rect width="115" height="26" rx="4" fill="#232F3E" />
+    <text x="57" y="18" fill="#FF9900" font-size="12" font-weight="700" text-anchor="middle">AWS Cloud</text>
+  </g>
+
+  <!-- ================= AWS REGION CONTAINER ================= -->
+  <rect x="300" y="135" width="980" height="900" rx="10" fill="#F8FAFC" stroke="#879596" stroke-width="1.5" stroke-dasharray="6,4" />
+  <text x="315" y="155" fill="#475569" font-size="12" font-weight="700">AWS Region (e.g. ap-south-1 / us-east-1)</text>
+
+  <!-- ================= VPC CONTAINER ================= -->
+  <rect x="315" y="170" width="950" height="850" rx="8" fill="#FAFCFF" stroke="#7AA116" stroke-width="2" />
+  <text x="330" y="190" fill="#7AA116" font-size="12" font-weight="800">Virtual Private Cloud (VPC) — CIDR: 10.0.0.0/16</text>
+
+  <!-- ================= PUBLIC SUBNET ================= -->
+  <rect x="330" y="205" width="220" height="795" rx="8" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="4,3" />
+  <rect x="330" y="205" width="180" height="22" rx="6" fill="#DCFCE7" />
+  <text x="340" y="220" fill="#15803D" font-size="11" font-weight="700">Public Subnet (10.0.1.0/24)</text>
+
+  <!-- Internet Gateway Badge -->
+  <g transform="translate(350, 240)">
+    <rect width="180" height="50" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#badge-shadow)"/>
+    <circle cx="25" cy="25" r="14" fill="#7AA116"/>
+    <!-- IGW Icon -->
+    <path d="M20 25 L30 25 M25 20 L30 25 L25 30" stroke="#FFF" stroke-width="2" fill="none"/>
+    <text x="48" y="24" fill="#0F172A" font-size="12" font-weight="700">Internet Gateway</text>
+    <text x="48" y="38" fill="#64748B" font-size="10">VPC Entry / Exit</text>
+  </g>
+
+  <!-- Application Load Balancer (ALB) -->
+  <g transform="translate(350, 310)">
+    <rect width="180" height="150" rx="8" fill="#FFFFFF" stroke="#7AA116" stroke-width="2" filter="url(#badge-shadow)"/>
+    <rect width="180" height="28" rx="8" fill="#7AA116" />
+    <text x="90" y="19" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">Application Load Balancer</text>
+    
+    <!-- ALB Endpoints list -->
+    <text x="15" y="48" fill="#334155" font-size="10" font-weight="700">ACM TLS (Port 443)</text>
+    <rect x="10" y="55" width="160" height="24" rx="4" fill="#F1F5F9" />
+    <text x="15" y="71" fill="#0F172A" font-size="9" font-family="monospace">/api/v1/webhooks/*</text>
+    
+    <rect x="10" y="84" width="160" height="24" rx="4" fill="#F1F5F9" />
+    <text x="15" y="100" fill="#0F172A" font-size="9" font-family="monospace">/api/v1/emergency-requests</text>
+
+    <rect x="10" y="113" width="160" height="24" rx="4" fill="#F1F5F9" />
+    <text x="15" y="129" fill="#0F172A" font-size="9" font-family="monospace">/api/v1/tracking/gps</text>
+  </g>
+
+  <!-- NAT Gateway -->
+  <g transform="translate(350, 680)">
+    <rect width="180" height="75" rx="8" fill="#FFFFFF" stroke="#7AA116" stroke-width="1.5" filter="url(#badge-shadow)"/>
+    <circle cx="28" cy="37" r="15" fill="#7AA116"/>
+    <path d="M22 37 L34 37 M29 31 L35 37 L29 43" stroke="#FFF" stroke-width="2" fill="none"/>
+    <text x="52" y="32" fill="#0F172A" font-size="12" font-weight="700">NAT Gateway</text>
+    <text x="52" y="47" fill="#64748B" font-size="10">Egress for Private Subnets</text>
+    <text x="52" y="60" fill="#047857" font-size="10">Outbound to Signals &amp; OBUs</text>
+  </g>
+
+
+  <!-- ================= PRIVATE APPLICATION SUBNET ================= -->
+  <rect x="570" y="205" width="410" height="795" rx="8" fill="#F0F9FF" stroke="#0284C7" stroke-width="1.5" stroke-dasharray="4,3" />
+  <rect x="570" y="205" width="230" height="22" rx="6" fill="#E0F2FE" />
+  <text x="580" y="220" fill="#0369A1" font-size="11" font-weight="700">Private App Subnet (10.0.10.0/24)</text>
+
+  <!-- Amazon ECS Fargate Container Group -->
+  <rect x="585" y="235" width="380" height="750" rx="8" fill="#FFFFFF" stroke="#ED7100" stroke-width="1.5" />
+  <g transform="translate(600, 245)">
+    <rect width="180" height="24" rx="4" fill="#ED7100" />
+    <text x="90" y="16" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">Amazon ECS (AWS Fargate)</text>
+  </g>
+
+  <!-- Microservice 1: Emergency Request Service -->
+  <g transform="translate(600, 280)">
+    <rect width="350" height="120" rx="8" fill="#FFF7ED" stroke="#FDBA74" stroke-width="1.5" filter="url(#badge-shadow)" />
+    <!-- Service Badge -->
+    <rect x="12" y="10" width="36" height="36" rx="6" fill="#ED7100" />
+    <text x="30" y="33" fill="#FFF" font-size="16" font-weight="bold" text-anchor="middle">1</text>
+    <text x="58" y="26" fill="#0F172A" font-size="13" font-weight="700">Emergency Request Service</text>
+    <text x="58" y="40" fill="#C2410C" font-size="10" font-weight="600">Docker: faiers-emergency-request • Port 8081</text>
+    <text x="15" y="68" fill="#475569" font-size="10">• Validates incoming voice webhook payload</text>
+    <text x="15" y="82" fill="#475569" font-size="10">• Persists emergency record into RDS</text>
+    <text x="15" y="96" fill="#475569" font-size="10">• Publishes EmergencyRequestAcceptedEvent</text>
+  </g>
+
+  <!-- Microservice 2: Dispatch Service -->
+  <g transform="translate(600, 435)">
+    <rect width="350" height="125" rx="8" fill="#FFF7ED" stroke="#FDBA74" stroke-width="1.5" filter="url(#badge-shadow)" />
+    <rect x="12" y="10" width="36" height="36" rx="6" fill="#ED7100" />
+    <text x="30" y="33" fill="#FFF" font-size="16" font-weight="bold" text-anchor="middle">2</text>
+    <text x="58" y="26" fill="#0F172A" font-size="13" font-weight="700">Dispatch Service</text>
+    <text x="58" y="40" fill="#C2410C" font-size="10" font-weight="600">Docker: faiers-dispatch • Port 8082</text>
+    <text x="15" y="68" fill="#475569" font-size="10">• Consumes accepted emergency requests</text>
+    <text x="15" y="82" fill="#475569" font-size="10">• Geospatial nearest vehicle search (PostGIS)</text>
+    <text x="15" y="96" fill="#475569" font-size="10">• Concurrency-safe vehicle allocation</text>
+    <text x="15" y="110" fill="#475569" font-size="10">• Triggers Vehicle Command Service</text>
+  </g>
+
+  <!-- Microservice 3: Vehicle Command Service -->
+  <g transform="translate(600, 595)">
+    <rect width="350" height="120" rx="8" fill="#FFF7ED" stroke="#FDBA74" stroke-width="1.5" filter="url(#badge-shadow)" />
+    <rect x="12" y="10" width="36" height="36" rx="6" fill="#ED7100" />
+    <text x="30" y="33" fill="#FFF" font-size="16" font-weight="bold" text-anchor="middle">3</text>
+    <text x="58" y="26" fill="#0F172A" font-size="13" font-weight="700">Vehicle Command Service</text>
+    <text x="58" y="40" fill="#C2410C" font-size="10" font-weight="600">Docker: faiers-vehicle-command • Port 8083</text>
+    <text x="15" y="68" fill="#475569" font-size="10">• Transmits dispatch order to Onboard Unit</text>
+    <text x="15" y="82" fill="#475569" font-size="10">• Tracks assignment ACK &amp; retry status</text>
+    <text x="15" y="96" fill="#475569" font-size="10">• Alerts Dispatch on unresponsive vehicles</text>
+  </g>
+
+  <!-- Microservice 4: Vehicle Tracking & Green Corridor Service -->
+  <g transform="translate(600, 755)">
+    <rect width="350" height="135" rx="8" fill="#FFF7ED" stroke="#FDBA74" stroke-width="1.5" filter="url(#badge-shadow)" />
+    <rect x="12" y="10" width="36" height="36" rx="6" fill="#ED7100" />
+    <text x="30" y="33" fill="#FFF" font-size="16" font-weight="bold" text-anchor="middle">4</text>
+    <text x="58" y="26" fill="#0F172A" font-size="13" font-weight="700">Vehicle Tracking &amp; Green Corridor</text>
+    <text x="58" y="40" fill="#C2410C" font-size="10" font-weight="600">Docker: faiers-vehicle-tracking • Port 8084</text>
+    <text x="15" y="68" fill="#475569" font-size="10">• Ingests real-time GPS coordinates</text>
+    <text x="15" y="82" fill="#475569" font-size="10">• Dynamic route calculation &amp; live ETA</text>
+    <text x="15" y="96" fill="#475569" font-size="10">• Requests signal priority from Traffic Controllers</text>
+    <text x="15" y="110" fill="#475569" font-size="10">• Releases green corridor post vehicle passage</text>
+  </g>
+
+  <!-- CloudWatch Container Insights Badge -->
+  <g transform="translate(600, 915)">
+    <rect width="350" height="50" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <circle cx="25" cy="25" r="14" fill="#3F83F8" />
+    <text x="25" y="30" fill="#FFF" font-size="12" font-weight="bold" text-anchor="middle">CW</text>
+    <text x="50" y="24" fill="#0F172A" font-size="11" font-weight="700">CloudWatch Logs &amp; ECS Auto Scaling</text>
+    <text x="50" y="38" fill="#64748B" font-size="10">Auto-scales Vehicle Tracking tasks on high GPS telemetry volume</text>
+  </g>
+
+
+  <!-- ================= PRIVATE DATA & PERSISTENCE SUBNET ================= -->
+  <rect x="1000" y="205" width="240" height="795" rx="8" fill="#FAF5FF" stroke="#A855F7" stroke-width="1.5" stroke-dasharray="4,3" />
+  <rect x="1000" y="205" width="220" height="22" rx="6" fill="#F3E8FF" />
+  <text x="1010" y="220" fill="#7E22CE" font-size="11" font-weight="700">Private Data Subnet (10.0.20.0/24)</text>
+
+  <!-- Amazon RDS PostgreSQL + PostGIS (Multi-AZ) -->
+  <g transform="translate(1015, 250)">
+    <rect width="210" height="250" rx="8" fill="#FFFFFF" stroke="#C925D1" stroke-width="2" filter="url(#badge-shadow)"/>
+    <rect width="210" height="28" rx="8" fill="#C925D1" />
+    <text x="105" y="19" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">Amazon RDS PostgreSQL</text>
+    
+    <g transform="translate(15, 40)">
+      <circle cx="15" cy="15" r="14" fill="#E879F9" />
+      <!-- Database cylinder icon -->
+      <ellipse cx="15" cy="11" rx="8" ry="3" fill="#FFF" />
+      <path d="M7 11 L7 19 A8 3 0 0 0 23 19 L23 11" fill="none" stroke="#FFF" stroke-width="1.5" />
+      <text x="38" y="14" fill="#0F172A" font-size="12" font-weight="700">PostGIS Enabled</text>
+      <text x="38" y="28" fill="#7E22CE" font-size="10" font-weight="600">Multi-AZ Deployment</text>
+    </g>
+
+    <text x="15" y="95" fill="#475569" font-size="10" font-weight="700">Database Schemas:</text>
+    <rect x="12" y="105" width="186" height="22" rx="4" fill="#F3E8FF" />
+    <text x="18" y="120" fill="#581C87" font-size="10">emergency_requests</text>
+    <rect x="12" y="132" width="186" height="22" rx="4" fill="#F3E8FF" />
+    <text x="18" y="147" fill="#581C87" font-size="10">vehicles &amp; capabilities</text>
+    <rect x="12" y="159" width="186" height="22" rx="4" fill="#F3E8FF" />
+    <text x="18" y="174" fill="#581C87" font-size="10">dispatch_assignments</text>
+    <rect x="12" y="186" width="186" height="22" rx="4" fill="#F3E8FF" />
+    <text x="18" y="201" fill="#581C87" font-size="10">traffic_signals &amp; corridors</text>
+    
+    <text x="15" y="232" fill="#6B21A8" font-size="10">Flyway DB Migrations</text>
+  </g>
+
+  <!-- Amazon ElastiCache for Redis -->
+  <g transform="translate(1015, 520)">
+    <rect width="210" height="130" rx="8" fill="#FFFFFF" stroke="#C925D1" stroke-width="1.5" filter="url(#badge-shadow)"/>
+    <rect width="210" height="26" rx="8" fill="#C925D1" />
+    <text x="105" y="18" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">Amazon ElastiCache</text>
+    
+    <g transform="translate(15, 38)">
+      <circle cx="15" cy="15" r="14" fill="#F472B6" />
+      <text x="15" y="20" fill="#FFF" font-size="12" font-weight="bold" text-anchor="middle">R</text>
+      <text x="38" y="14" fill="#0F172A" font-size="12" font-weight="700">Redis Cluster</text>
+      <text x="38" y="28" fill="#9D174D" font-size="10">Sub-ms In-Memory</text>
+    </g>
+    <text x="15" y="90" fill="#475569" font-size="10">• Real-time GPS coordinate cache</text>
+    <text x="15" y="105" fill="#475569" font-size="10">• High-frequency vehicle ping buffer</text>
+  </g>
+
+  <!-- Amazon SQS & SNS Messaging Integration -->
+  <g transform="translate(1015, 675)">
+    <rect width="210" height="190" rx="8" fill="#FFFFFF" stroke="#E7157B" stroke-width="2" filter="url(#badge-shadow)"/>
+    <rect width="210" height="26" rx="8" fill="#E7157B" />
+    <text x="105" y="18" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">Amazon SQS &amp; SNS Messaging</text>
+    
+    <g transform="translate(15, 38)">
+      <circle cx="15" cy="15" r="14" fill="#E7157B" />
+      <text x="15" y="20" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">SQS</text>
+      <text x="38" y="14" fill="#0F172A" font-size="12" font-weight="700">Asynchronous Queues</text>
+      <text x="38" y="28" fill="#BE185D" font-size="10">Decoupled Microservices</text>
+    </g>
+
+    <rect x="12" y="80" width="186" height="36" rx="4" fill="#FDF2F8" stroke="#FBCFE8" />
+    <text x="20" y="95" fill="#831843" font-size="10" font-weight="700">emergency-dispatch-queue</text>
+    <text x="20" y="107" fill="#9D174D" font-size="9">Carries accepted emergency jobs</text>
+
+    <rect x="12" y="125" width="186" height="30" rx="4" fill="#FFF1F2" stroke="#FECDD3" />
+    <text x="20" y="140" fill="#9F1239" font-size="10" font-weight="700">emergency-dlq (Dead Letter)</text>
+    <text x="20" y="150" fill="#BE123C" font-size="9">Handles Poison / Unassigned msgs</text>
+
+    <text x="15" y="175" fill="#475569" font-size="9">Transactional Outbox Support</text>
+  </g>
+
+
+  <!-- ================= RIGHT COLUMN: AWS MANAGEMENT & SECURITY SERVICES ================= -->
+  <g transform="translate(1300, 135)">
+    <!-- Box for AWS Managed Platform Services -->
+    <rect width="250" height="900" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5" />
+    <rect width="250" height="32" rx="10" fill="#0F172A" />
+    <text x="125" y="21" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">AWS SECURITY &amp; MANAGEMENT</text>
+
+    <!-- 1. Amazon ECR -->
+    <g transform="translate(15, 50)">
+      <rect width="220" height="85" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#badge-shadow)"/>
+      <rect x="10" y="12" width="30" height="30" rx="6" fill="#ED7100" />
+      <text x="25" y="32" fill="#FFF" font-size="12" font-weight="bold" text-anchor="middle">ECR</text>
+      <text x="50" y="24" fill="#0F172A" font-size="12" font-weight="700">Amazon ECR</text>
+      <text x="50" y="38" fill="#64748B" font-size="10">Elastic Container Registry</text>
+      <text x="12" y="62" fill="#334155" font-size="9">• 4 Separate microservice image repos</text>
+      <text x="12" y="74" fill="#334155" font-size="9">• Immutable tag deployments</text>
+    </g>
+
+    <!-- 2. AWS Secrets Manager -->
+    <g transform="translate(15, 150)">
+      <rect width="220" height="90" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#badge-shadow)"/>
+      <rect x="10" y="12" width="30" height="30" rx="6" fill="#DD344C" />
+      <!-- Lock icon -->
+      <path d="M22 22 L22 20 A3 3 0 0 1 28 20 L28 22 M20 22 L30 22 L30 29 L20 29 Z" stroke="#FFF" stroke-width="1.5" fill="none" />
+      <text x="50" y="24" fill="#0F172A" font-size="12" font-weight="700">AWS Secrets Manager</text>
+      <text x="50" y="38" fill="#64748B" font-size="10">Encrypted Credentials</text>
+      <text x="12" y="62" fill="#334155" font-size="9">• PostgreSQL database passwords</text>
+      <text x="12" y="74" fill="#334155" font-size="9">• ElevenLabs X-Webhook-Secret</text>
+    </g>
+
+    <!-- 3. AWS IAM -->
+    <g transform="translate(15, 255)">
+      <rect width="220" height="85" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#badge-shadow)"/>
+      <rect x="10" y="12" width="30" height="30" rx="6" fill="#7928CA" />
+      <text x="25" y="32" fill="#FFF" font-size="12" font-weight="bold" text-anchor="middle">IAM</text>
+      <text x="50" y="24" fill="#0F172A" font-size="12" font-weight="700">AWS IAM Roles</text>
+      <text x="50" y="38" fill="#64748B" font-size="10">Least Privilege Access</text>
+      <text x="12" y="60" fill="#334155" font-size="9">• ECS Task Execution Roles</text>
+      <text x="12" y="72" fill="#334155" font-size="9">• SQS produce &amp; consume policies</text>
+    </g>
+
+    <!-- 4. Amazon CloudWatch -->
+    <g transform="translate(15, 355)">
+      <rect width="220" height="95" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#badge-shadow)"/>
+      <rect x="10" y="12" width="30" height="30" rx="6" fill="#3B82F6" />
+      <text x="25" y="32" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">CW</text>
+      <text x="50" y="24" fill="#0F172A" font-size="12" font-weight="700">Amazon CloudWatch</text>
+      <text x="50" y="38" fill="#64748B" font-size="10">Observability &amp; Alarms</text>
+      <text x="12" y="60" fill="#334155" font-size="9">• Log Groups: /faiers/ecs/*</text>
+      <text x="12" y="72" fill="#334155" font-size="9">• Container CPU/Memory metrics</text>
+      <text x="12" y="84" fill="#334155" font-size="9">• Alarms for DLQ size &amp; latency</text>
+    </g>
+
+    <!-- 5. Amazon Route 53 & ACM -->
+    <g transform="translate(15, 465)">
+      <rect width="220" height="85" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#badge-shadow)"/>
+      <rect x="10" y="12" width="30" height="30" rx="6" fill="#7AA116" />
+      <text x="25" y="32" fill="#FFF" font-size="12" font-weight="bold" text-anchor="middle">R53</text>
+      <text x="50" y="24" fill="#0F172A" font-size="12" font-weight="700">Route 53 &amp; ACM</text>
+      <text x="50" y="38" fill="#64748B" font-size="10">DNS &amp; TLS Certificates</text>
+      <text x="12" y="60" fill="#334155" font-size="9">• Public API endpoint DNS</text>
+      <text x="12" y="72" fill="#334155" font-size="9">• Auto-renewing HTTPS certificates</text>
+    </g>
+
+    <!-- Architecture Callout Card -->
+    <g transform="translate(15, 570)">
+      <rect width="220" height="310" rx="8" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1" />
+      <text x="110" y="24" fill="#1E40AF" font-size="12" font-weight="700" text-anchor="middle">SYSTEM DESIGN HIGHLIGHTS</text>
+      
+      <text x="15" y="50" fill="#1E3A8A" font-size="10" font-weight="700">1. Subnet Isolation</text>
+      <text x="15" y="64" fill="#334155" font-size="9">Only ALB is internet-facing. Microservices</text>
+      <text x="15" y="76" fill="#334155" font-size="9">and DB live in private VPC subnets.</text>
+
+      <text x="15" y="100" fill="#1E3A8A" font-size="10" font-weight="700">2. Concurrency Safety</text>
+      <text x="15" y="114" fill="#334155" font-size="9">Dispatch service prevents double allocation</text>
+      <text x="15" y="126" fill="#334155" font-size="9">via DB pessimistic/optimistic locks.</text>
+
+      <text x="15" y="150" fill="#1E3A8A" font-size="10" font-weight="700">3. Independent Scalability</text>
+      <text x="15" y="164" fill="#334155" font-size="9">Vehicle Tracking scales independently</text>
+      <text x="15" y="176" fill="#334155" font-size="9">to handle high GPS update frequency.</text>
+
+      <text x="15" y="200" fill="#1E3A8A" font-size="10" font-weight="700">4. Fail-Safe Green Corridor</text>
+      <text x="15" y="214" fill="#334155" font-size="9">Requests priority rather than overriding.</text>
+      <text x="15" y="226" fill="#334155" font-size="9">Traffic controllers enforce safety rules.</text>
+
+      <text x="15" y="250" fill="#1E3A8A" font-size="10" font-weight="700">5. Monorepo CI/CD</text>
+      <text x="15" y="264" fill="#334155" font-size="9">GitHub Actions detects changed modules</text>
+      <text x="15" y="276" fill="#334155" font-size="9">and deploys only altered containers.</text>
+    </g>
+  </g>
+
+
+  <!-- ================= CONNECTION PATHWAYS & FLOW ARROWS ================= -->
+
+  <!-- Flow 1: ElevenLabs -> ALB Webhook -->
+  <path d="M235 225 L350 350" fill="none" stroke="#FF9900" stroke-width="2.5" marker-end="url(#arrow-aws)" />
+  <!-- Step 1 badge -->
+  <circle cx="280" cy="280" r="11" fill="#FF9900" />
+  <text x="280" y="284" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">1</text>
+
+  <!-- Flow 2: ALB -> Emergency Request Service -->
+  <path d="M530 350 L600 340" fill="none" stroke="#FF9900" stroke-width="2.5" marker-end="url(#arrow-aws)" />
+  <!-- Step 2 badge -->
+  <circle cx="565" cy="335" r="11" fill="#FF9900" />
+  <text x="565" y="339" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">2</text>
+
+  <!-- Flow 3: Emergency Request Service -> RDS (Store Request) -->
+  <path d="M950 330 L1015 330" fill="none" stroke="#7E22CE" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Flow 4: Emergency Request Service -> Amazon SQS (Accepted Event) -->
+  <path d="M950 360 Q990 380 1015 690" fill="none" stroke="#E7157B" stroke-width="2.5" stroke-dasharray="4,2" marker-end="url(#arrow-pink)" />
+  <!-- Step 3 badge -->
+  <circle cx="980" cy="500" r="11" fill="#E7157B" />
+  <text x="980" y="504" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">3</text>
+
+  <!-- Flow 5: Amazon SQS -> Dispatch Service (Consume) -->
+  <path d="M1015 720 Q985 700 950 500" fill="none" stroke="#E7157B" stroke-width="2.5" marker-end="url(#arrow-pink)" />
+
+  <!-- Flow 6: Dispatch Service -> RDS PostGIS (Query nearest available vehicle) -->
+  <path d="M950 470 L1015 440" fill="none" stroke="#7E22CE" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arrow)" />
+
+  <!-- Flow 7: Dispatch Service -> Vehicle Command Service -->
+  <path d="M775 560 L775 595" fill="none" stroke="#0073BB" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+  <!-- Step 4 badge -->
+  <circle cx="790" cy="578" r="11" fill="#0073BB" />
+  <text x="790" y="582" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">4</text>
+
+  <!-- Flow 8: Vehicle Command Service -> NAT Gateway -> Emergency Vehicle OBU (Dispatch Command) -->
+  <path d="M600 660 L530 690" fill="none" stroke="#0073BB" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M350 710 L235 480" fill="none" stroke="#0073BB" stroke-width="2.5" marker-end="url(#arrow-blue)" />
+  <!-- Step 5 badge -->
+  <circle cx="280" cy="580" r="11" fill="#0073BB" />
+  <text x="280" y="584" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">5</text>
+
+  <!-- Flow 9: Emergency Vehicle OBU -> ALB -> Vehicle Tracking Service (Periodic GPS Ingestion) -->
+  <path d="M235 440 L350 410" fill="none" stroke="#10B981" stroke-width="2.5" marker-end="url(#arrow-green)" />
+  <path d="M530 420 Q565 580 600 810" fill="none" stroke="#10B981" stroke-width="2.5" marker-end="url(#arrow-green)" />
+  <!-- Step 6 badge -->
+  <circle cx="295" cy="425" r="11" fill="#10B981" />
+  <text x="295" y="429" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">6</text>
+
+  <!-- Flow 10: Vehicle Tracking Service -> ElastiCache Redis (Cache live location) & RDS -->
+  <path d="M950 780 Q980 730 1015 610" fill="none" stroke="#C925D1" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M950 830 Q1050 850 1100 500" fill="none" stroke="#7E22CE" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow)" />
+
+  <!-- Flow 11: Vehicle Tracking Service -> NAT Gateway -> Traffic Signal Controllers (Signal Priority Request) -->
+  <path d="M600 850 L480 850 L440 755" fill="none" stroke="#10B981" stroke-width="2.5" marker-end="url(#arrow-green)" />
+  <path d="M350 735 L235 735" fill="none" stroke="#10B981" stroke-width="2.5" marker-end="url(#arrow-green)" />
+  <!-- Step 7 badge -->
+  <circle cx="280" cy="725" r="11" fill="#10B981" />
+  <text x="280" y="729" fill="#FFF" font-size="11" font-weight="bold" text-anchor="middle">7</text>
+
+  <!-- Flow 12: GitHub Actions -> ECR / ECS Deployment -->
+  <path d="M235 920 Q300 1060 850 1060 Q1300 1060 1340 235" fill="none" stroke="#64748B" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow)" />
+
+</svg>

@@ -1,0 +1,547 @@
+FAIERS — Fully Autonomous Intelligent Emergency Response System
+Backend Architecture & Microservices Deployment Specification
+1. Flow
+1.1 Emergency Request and Dispatch Flow
+1. Emergency Call: An emergency call is received through Exotel and handled by an ElevenLabs voice agent.
+2. Information Collection: The voice agent collects emergency details, including the caller's location, emergency category, severity, and other relevant information.
+3. Request Submission: The voice agent sends the collected information to the Emergency Request Service through an authenticated HTTP POST webhook.
+4. Request Processing: The Emergency Request Service validates the payload, generates an emergency request ID, stores the request in the database, and initiates the dispatch workflow.
+5. Vehicle Allocation: The Dispatch Service identifies the nearest available and suitable emergency vehicle based on its current location, availability, emergency category, and estimated travel time.
+6. Dispatch Command: The Dispatch Service assigns the vehicle and initiates a dispatch command through the Vehicle Command Service.
+7. Onboard Activation: The Vehicle Command Service communicates with the onboard unit installed in the emergency vehicle. The onboard unit acknowledges the assignment and activates emergency mode.
+1.2 Live Tracking and Green Corridor Flow
+8. GPS Transmission: After accepting the assignment, the onboard unit periodically transmits the vehicle's GPS coordinates to the backend.
+9. Location Processing: The Vehicle Tracking & Green Corridor Service processes incoming GPS updates and maintains the latest known location of each active emergency vehicle.
+10. Route and ETA Calculation: The service calculates the road route, estimates arrival time (ETA), and identifies upcoming traffic intersections along the vehicle's route.
+11. Traffic Signal Coordination: As the vehicle approaches an intersection, the service coordinates with compatible traffic signal controllers to request authorized signal priority.
+12. Green Corridor Activation: Traffic controllers evaluate the request and apply the appropriate signal changes according to their safety rules. The service monitors controller acknowledgments and tracks the vehicle's progress.
+13. Completion: When the vehicle reaches its destination or the emergency assignment is cancelled, tracking and signal-priority coordination are stopped for that assignment, and the vehicle's availability is updated.
+Overall architecture:
+                    EMERGENCY REQUEST
+                           |
+                  +------------------+
+                  | ElevenLabs Agent |
+                  |   + Exotel       |
+                  +--------+---------+
+                           |
+                     HTTP POST
+                           |
+                           v
+               +------------------------+
+               | Emergency Request      |
+               | Service                 |
+               +-----------+------------+
+                           |
+                    Request Event
+                           |
+                           v
+               +------------------------+
+               | Dispatch Service        |
+               |                        |
+               | Find Suitable Vehicle  |
+               | Allocate & Assign      |
+               +-----------+------------+
+                           |
+                           v
+               +------------------------+
+               | Vehicle Command Service |
+               +-----------+------------+
+                           |
+                    Dispatch Command
+                           |
+                           v
+               +------------------------+
+               | Onboard Vehicle Unit    |
+               +-----------+------------+
+                           |
+                      GPS Updates
+                           |
+                           v
+               +-------------------------------+
+               | Vehicle Tracking & Green      |
+               | Corridor Service              |
+               |                               |
+               | Live GPS Tracking              |
+               | Route & ETA Calculation        |
+               | Traffic Signal Coordination   |
+               +---------------+---------------+
+                               |
+                               v
+                    Traffic Signal Controllers
+
+The Emergency Request and Dispatch Services should communicate through reliable asynchronous messaging where appropriate. Critical operations should be persisted before events are published, and consumers should handle duplicate messages safely. Traffic signal integration must use authorized controllers and preserve pedestrian and conflicting-traffic safety.
+2. Services and Description
+FAIERS will initially contain four Spring Boot microservices. Each service will be independently buildable, packaged, containerized, and deployable on Amazon ECS.
+2.1 Emergency Request Service
+Responsibility: Accept, validate, and manage incoming emergency requests.
+
+Core functionalities:
+- Expose REST APIs and a webhook endpoint for ElevenLabs/Exotel integration.
+- Receive structured emergency information from the voice agent.
+- Validate incoming payloads and authenticate external requests.
+- Generate unique emergency request IDs.
+- Store emergency details and request status in PostgreSQL.
+- Publish an event when an emergency request is accepted.
+- Track request lifecycle states, such as RECEIVED, VALIDATED, DISPATCH_PENDING, and CANCELLED.
+Example endpoint:
+POST /api/v1/emergency-requests
+
+Example payload:
+{
+  "callerId": "CALL-1024",
+  "emergencyType": "MEDICAL",
+  "severity": "HIGH",
+  "location": {
+    "latitude": 13.0827,
+    "longitude": 80.2707
+  },
+  "description": "Patient experiencing breathing difficulty"
+}
+
+The payload is illustrative; the final schema will depend on the fields actually collected by the voice agent.
+
+Technology: Java 21, Spring Boot, Spring Web, Spring Validation, Spring Data JPA, PostgreSQL, and an AWS messaging integration.
+2.2 Dispatch Service
+Responsibility: Identify and allocate the most suitable available emergency vehicle.
+
+Core functionalities:
+- Consume accepted emergency requests.
+- Retrieve available vehicles and their latest known locations.
+- Filter vehicles based on emergency category, equipment, availability, and operational status.
+- Identify suitable candidates using geospatial proximity.
+- Use road-network ETA where available rather than relying solely on straight-line distance.
+- Allocate a vehicle and create a dispatch assignment.
+- Prevent the same vehicle from being assigned to multiple active emergencies.
+- Initiate dispatch through the Vehicle Command Service.
+- Handle cases where no suitable vehicle is available.
+Example internal API:
+POST /api/v1/dispatch/assignments
+
+Example assignment:
+{
+  "emergencyRequestId": "EMG-1001",
+  "vehicleId": "AMB-042",
+  "status": "ASSIGNED"
+}
+
+Technology: Java 21, Spring Boot, Spring Data JPA, PostgreSQL/PostGIS, and AWS messaging.
+
+Important: Vehicle allocation must be concurrency-safe. If two emergency requests arrive simultaneously, the service must prevent both from reserving the same vehicle.
+2.3 Vehicle Command Service
+Responsibility: Communicate dispatch instructions to the emergency vehicle's onboard unit.
+
+Core functionalities:
+- Receive vehicle assignment instructions from the Dispatch Service.
+- Send dispatch commands to the appropriate onboard unit.
+- Include the emergency ID, vehicle assignment ID, destination, and other required operational details.
+- Receive acknowledgment that the onboard unit has accepted the command.
+- Track command delivery and acknowledgment status.
+- Retry transient failures and handle unresponsive onboard units.
+- Report failed or timed-out commands to the Dispatch Service.
+Example command:
+{
+  "commandId": "CMD-5001",
+  "emergencyRequestId": "EMG-1001",
+  "vehicleId": "AMB-042",
+  "commandType": "DISPATCH",
+  "destination": {
+    "latitude": 13.0674,
+    "longitude": 80.2376
+  }
+}
+
+Technology: Java 21, Spring Boot, Spring Web, PostgreSQL, and an authenticated device communication mechanism.
+
+For the initial prototype, authenticated HTTPS communication is sufficient. MQTT or another persistent messaging protocol can be introduced if the onboard units require it.
+
+Important: Sending a command does not mean the vehicle has accepted it. The onboard unit must explicitly acknowledge the assignment.
+2.4 Vehicle Tracking & Green Corridor Service
+Responsibility: Handle real-time vehicle tracking, route and ETA calculations, and traffic signal coordination.
+
+This service combines the previous tracking, route/ETA, and green corridor responsibilities into one deployable microservice.
+
+Core functionalities:
+
+A. Live Vehicle Tracking
+- Receive periodic GPS updates from active emergency vehicles.
+- Process concurrent updates from multiple vehicles.
+- Validate coordinates and reject invalid or stale updates.
+- Maintain the latest known vehicle location and timestamp.
+- Associate location updates with active vehicle assignments.
+B. Route and ETA Calculation
+- Calculate road routes between the vehicle and its destination.
+- Estimate arrival times using road-network information.
+- Identify upcoming intersections along the active route.
+- Recalculate routes and ETA when the vehicle deviates from its planned route.
+C. Green Corridor Coordination
+- Identify intersections approaching the emergency vehicle.
+- Send authorized signal-priority requests to compatible traffic controllers.
+- Coordinate requests based on the vehicle's direction, route, and estimated arrival time.
+- Monitor controller acknowledgments and reported signal states.
+- Release signal priority when the vehicle passes or the assignment ends.
+- Handle controller failures and prevent conflicting signal-priority requests.
+Example GPS update:
+{
+  "vehicleId": "AMB-042",
+  "assignmentId": "ASN-2001",
+  "latitude": 13.0750,
+  "longitude": 80.2600,
+  "timestamp": "2026-10-25T13:30:00Z"
+}
+
+Technology: Java 21, Spring Boot, Spring Web, PostgreSQL/PostGIS, Redis (optional), and a routing engine or routing API.
+
+For green corridor integration, actual traffic signal hardware and controller interfaces depend on the infrastructure available to the project. Initially, these can be simulated.
+
+Important: This service should request signal priority rather than blindly changing traffic lights. The traffic controller must enforce safety rules and confirm whether a request was accepted.
+3. Monorepo Structure & Spring Specifications for ECS Deployment
+3.1 Monorepo Approach
+FAIERS will use a single Git repository containing all four microservices, managed through a root Maven POM.
+
+Each service will have:
+- Its own module directory.
+- Its own pom.xml.
+- Its own Spring Boot application entry point.
+- Its own configuration.
+- Its own test suite.
+- Its own Dockerfile.
+- Its own independently built JAR and Docker image.
+- Its own Amazon ECS task definition and service.
+The monorepo simplifies dependency management and coordinated development while preserving independent deployment.
+3.2 Proposed Repository Structure
+faiers-backend/
+│
+├── pom.xml
+├── README.md
+├── .gitignore
+│
+├── emergency-request-service/
+│   ├── pom.xml
+│   ├── Dockerfile
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/faiers/emergency/
+│       │   │   ├── EmergencyRequestApplication.java
+│       │   │   ├── controller/
+│       │   │   ├── service/
+│       │   │   ├── repository/
+│       │   │   ├── entity/
+│       │   │   ├── dto/
+│       │   │   ├── messaging/
+│       │   │   └── config/
+│       │   └── resources/
+│       │       ├── application.yml
+│       │       └── db/migration/
+│       └── test/
+│
+├── dispatch-service/
+│   ├── pom.xml
+│   ├── Dockerfile
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/faiers/dispatch/
+│       │   │   ├── DispatchApplication.java
+│       │   │   ├── controller/
+│       │   │   ├── service/
+│       │   │   ├── repository/
+│       │   │   ├── entity/
+│       │   │   ├── dto/
+│       │   │   ├── messaging/
+│       │   │   └── config/
+│       │   └── resources/
+│       │       └── application.yml
+│       └── test/
+│
+├── vehicle-command-service/
+│   ├── pom.xml
+│   ├── Dockerfile
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/faiers/command/
+│       │   │   ├── VehicleCommandApplication.java
+│       │   │   ├── controller/
+│       │   │   ├── service/
+│       │   │   ├── repository/
+│       │   │   ├── entity/
+│       │   │   ├── dto/
+│       │   │   ├── device/
+│       │   │   └── config/
+│       │   └── resources/
+│       │       └── application.yml
+│       └── test/
+│
+├── vehicle-tracking-service/
+│   ├── pom.xml
+│   ├── Dockerfile
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/faiers/tracking/
+│       │   │   ├── VehicleTrackingApplication.java
+│       │   │   ├── controller/
+│       │   │   ├── tracking/
+│       │   │   ├── routing/
+│       │   │   ├── eta/
+│       │   │   ├── greencorridor/
+│       │   │   ├── repository/
+│       │   │   ├── messaging/
+│       │   │   └── config/
+│       │   └── resources/
+│       │       └── application.yml
+│       └── test/
+│
+├── infrastructure/
+│   ├── terraform/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   └── modules/
+│   └── ecs/
+│
+└── .github/
+    └── workflows/
+        └── deploy.yml
+
+The package names and module names are illustrative. We can refine them as the implementation develops.
+3.3 Root Maven POM Specifications
+The root pom.xml should use Maven's parent POM and aggregator POM capabilities to manage all four modules.
+
+It should:
+- Declare the project as a Maven parent with pom packaging.
+- Set Java 21 as the compiler release.
+- Define the four service modules.
+- Centralize dependency versions where practical.
+- Manage shared plugin versions.
+- Configure common build conventions.
+Example:
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+         http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.faiers</groupId>
+    <artifactId>faiers-backend</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>emergency-request-service</module>
+        <module>dispatch-service</module>
+        <module>vehicle-command-service</module>
+        <module>vehicle-tracking-service</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-boot.version>3.5.0</spring-boot.version>
+    </properties>
+
+</project>
+
+This is a starting skeleton, not the complete production POM. In the implementation, we should use a supported Spring Boot 3.x release and pin a current compatible patch version, rather than treating the example version as a requirement.
+
+Important distinction: The root POM aggregates the services, but it does not create one combined application. Each service remains independently executable and deployable.
+3.4 Individual Spring Boot Microservice Specifications
+Each service should be a standalone Spring Boot application.
+
+For example, the Emergency Request Service should have:
+package com.faiers.emergency;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class EmergencyRequestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(
+            EmergencyRequestApplication.class,
+            args
+        );
+    }
+}
+
+Each other service will have its own equivalent entry point.
+
+Recommended conventions:
+Specification	Requirement
+Language	Java 21
+Framework	Spring Boot 3.x
+Build tool	Maven
+Packaging	Executable JAR
+API style	REST APIs using JSON
+API documentation	Springdoc OpenAPI
+Validation	Jakarta Bean Validation
+Persistence	Spring Data JPA where appropriate
+Database migrations	Flyway
+Health checks	Spring Boot Actuator
+Logging	Structured JSON logs
+Testing	JUnit 5, Mockito, integration tests
+Containerization	Docker
+Configuration	Environment variables and external configuration
+Secrets	AWS Secrets Manager
+Interservice messaging	Amazon SQS/SNS initially
+Observability	CloudWatch; OpenTelemetry can be added
+Deployment	Amazon ECS with AWS Fargate
+
+
+Spring Boot dependency guidance:
+- Use spring-boot-starter-web for REST APIs.
+- Use spring-boot-starter-validation for request validation.
+- Use spring-boot-starter-data-jpa for relational persistence.
+- Use spring-boot-starter-actuator for health and monitoring endpoints.
+- Use the PostgreSQL JDBC driver where needed.
+- Use the appropriate AWS SDK or Spring Cloud AWS integration for messaging and AWS services.
+Not every dependency belongs in every service. For example, the Vehicle Command Service does not need database or messaging dependencies unless its chosen implementation requires them.
+3.5 Database and Messaging Architecture
+Database: PostgreSQL + PostGIS
+
+Use PostgreSQL for persistent operational data, with PostGIS for geospatial queries.
+
+Initial data domains:
+- Emergency requests and their status.
+- Vehicle registry and operational capabilities.
+- Dispatch assignments.
+- Vehicle command and acknowledgment records.
+- Traffic intersection metadata and coordination records.
+These can initially live in one managed PostgreSQL database with logically separated schemas or carefully defined table ownership. Each service should own its data and access it through its own persistence layer rather than directly manipulating another service's tables.
+
+Live location: Redis is optional for fast access to the latest vehicle coordinates. PostgreSQL/PostGIS can be sufficient for the first prototype, depending on update volume.
+
+Messaging: Amazon SQS/SNS
+
+Use asynchronous messaging for operations that should not depend on another service responding immediately.
+
+For example:
+Emergency Request Service
+          |
+          | EmergencyRequestReceived
+          v
+      Amazon SQS
+          |
+          v
+     Dispatch Service
+
+Additional messages can represent vehicle assignment, command status, and assignment completion.
+
+Use idempotent consumers, retry policies, dead-letter queues, and reliable database-to-event publication. A transactional outbox is a good option for ensuring that a database update and the corresponding event are not lost between two separate operations.
+3.6 Docker Specifications
+Each service must have its own Dockerfile and produce its own container image.
+
+Example Dockerfile:
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+This assumes that the service's Maven build produces one executable JAR in target/. We can refine the image for production by using a non-root user, minimizing image size, and configuring JVM memory appropriately for container limits.
+
+Each service should listen on its configured port. Port 8080 can be used initially, provided the services run in separate containers.
+
+Independent image examples:
+faiers-emergency-request:1.0.0
+faiers-dispatch:1.0.0
+faiers-vehicle-command:1.0.0
+faiers-vehicle-tracking:1.0.0
+
+Each image is built, tested, pushed, and deployed independently.
+3.7 Amazon ECS Deployment Architecture
+Use Amazon ECS with AWS Fargate to run the containerized microservices without managing the underlying EC2 instances.
+
+Recommended deployment components:
+AWS component	Purpose
+Amazon ECR	Stores Docker images for each service
+Amazon ECS	Manages service deployments and task lifecycles
+AWS Fargate	Runs containers without managing EC2 servers
+Application Load Balancer	Routes incoming HTTP requests to appropriate services
+Amazon RDS for PostgreSQL	Managed relational database
+Amazon SQS/SNS	Asynchronous interservice communication
+Amazon ElastiCache for Redis	Optional live-location cache
+AWS Secrets Manager	Stores database credentials and API secrets
+Amazon CloudWatch	Collects logs, metrics, and alarms
+AWS IAM	Controls permissions between services and AWS resources
+AWS VPC	Provides network isolation and private subnets
+AWS Certificate Manager	Provides TLS certificates for supported HTTPS endpoints
+
+
+Deployment model:
+                    External Call / Webhook
+                              |
+                              v
+                   Application Load Balancer
+                              |
+               +--------------+--------------+
+               |                             |
+               v                             v
+    Emergency Request ECS          Other Public APIs
+           Service                  (if required)
+               |
+               v
+          Amazon SQS
+               |
+               v
+       Dispatch ECS Service
+               |
+               v
+    Vehicle Command ECS Service
+               |
+               v
+       Onboard Vehicle Units
+
+
+    GPS Updates from Vehicles
+               |
+               v
+     Vehicle Tracking ECS Service
+               |
+          +----+------------------+
+          |                       |
+          v                       v
+    PostgreSQL/PostGIS       Traffic Controllers
+          |
+          v
+      CloudWatch
+
+The diagram is conceptual. Internal service-to-service traffic should normally stay within the VPC rather than passing through a public load balancer. Expose only the endpoints that genuinely need external access, such as the emergency webhook and the vehicle GPS-ingestion endpoint.
+
+For the first deployment:
+- Use separate ECS services and task definitions for all four microservices.
+- Use private subnets for backend tasks and the database.
+- Expose only required endpoints through the load balancer.
+- Configure security groups to permit only necessary traffic.
+- Store credentials and external API secrets in Secrets Manager.
+- Configure health checks, logs, CPU/memory metrics, and alarms.
+- Start with one task per service for development, then scale services independently according to load and availability requirements.
+The Vehicle Tracking Service may require independent scaling because GPS telemetry can generate a high volume of requests. Its eventual task count should be determined by measured traffic and performance testing.
+3.8 CI/CD Deployment Workflow
+Use GitHub Actions for automated builds and deployments.
+
+Suggested workflow:
+1. A developer pushes code to GitHub.
+2. GitHub Actions detects which service modules have changed.
+3. Maven compiles the affected modules and runs tests.
+4. Docker builds the corresponding service images.
+5. Images are pushed to Amazon ECR.
+6. The deployment workflow updates the relevant ECS service or task definition.
+7. ECS starts replacement tasks and waits for health checks.
+8. CloudWatch collects logs and metrics to help detect deployment problems.
+Because this is a monorepo, CI/CD should avoid rebuilding and deploying every service for every change unless shared build configuration or dependencies require it.
+3.9 Implementation Order
+To keep development manageable, implement the system incrementally:
+1. Foundation: Create the Maven monorepo, configure Java 21 and Spring Boot, and make all four services start independently.
+2. Emergency ingestion: Implement the webhook, request validation, database persistence, and emergency request status.
+3. Dispatch: Implement vehicle registration, availability, geospatial candidate selection, and safe assignment.
+4. Vehicle commands: Implement dispatch commands, onboard-unit simulation, acknowledgment, and timeout handling.
+5. Tracking: Implement GPS ingestion, live vehicle state, route calculation, and ETA.
+6. Green corridor: Simulate traffic signal controllers, implement signal-priority requests, and handle acknowledgments and safe release.
+7. Deployment: Containerize each service, deploy to ECS Fargate, configure RDS and messaging, and establish CI/CD and monitoring.
+Recommended initial scope: Build and test the complete workflow with simulated vehicles and traffic signals before integrating real onboard hardware or traffic infrastructure. This will let you demonstrate the core FAIERS architecture without depending on external hardware during early development.
